@@ -35,7 +35,7 @@ if __name__ == "__main__":
   parser.add_argument('-dec','--DEC',dest="dec",type=str,default=None)
   parser.add_argument('-cp','--copy',dest="copy",type=str,default=None)
   args = parser.parse_args()
-  if not args.ob != [] and not args.target != 'GRB':
+  if args.ob == [] or args.target == 'GRB':
     print("\tPlease give the required -ob/-target argument")
     print("\tUse -h/--help for details!")
   else:

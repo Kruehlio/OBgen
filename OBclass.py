@@ -3,10 +3,11 @@ import urllib
 import sys
 import datetime
 import os
+import re
 
 XRTURL = 'http://www.swift.ac.uk/xrt_positions/index.php?basic=none&txt=1'
 SESAMEURL = "http://cdsweb.u-strasbg.fr/cgi-bin/nph-sesame/-oI?"
-
+SwiftURL = "http://swift.gsfc.nasa.gov/archive/grb_table/table.php?obs=Swift&year=All+Years&restrict=none&grb_time=1&grb_trigger=1"
 
 class GRONDob:
     def __init__(self, target):
@@ -18,6 +19,23 @@ class GRONDob:
         self.acq = OBparams.acquisition
         self.OBs = []        
         self.obsDate = str(datetime.date.today())
+        self.getTrig()
+
+
+    def getTrig(self):
+        if re.match("\d\d\d\d\d\d", self.target) or re.match("\d\d\d\d\d\d\D", self.target):
+            self.target = 'GRB%s' %self.target
+        self.targetid = self.target
+        if re.match('GRB\d\d\d\d\d\d', self.target):
+            response = urllib.urlopen(SwiftURL)
+            html = response.read()
+            response.close()
+            grbpos = html.find(self.target[3:])
+            if grbpos != -1:
+                trignum =  re.findall(r'\d\d\d\d\d\d', html[grbpos:grbpos+100])
+                if len(trignum) == 3:
+                    print '\tSwift trigger number found: %s' %trignum[-1]
+                    self.targetid = 'SWIFT-%s' %trignum[-1]
 
     def formatCoords(self, ra, dec):
         def addzero(val, n):
@@ -27,8 +45,14 @@ class GRONDob:
             else:
                 if n == 1: return '%.0f' %val
                 if n == 2: return '%.2f' %val
-        try:
+        
+        if not re.match("\d\d\d\d\d\d\.", ra):
+          try:
             ra, dec = float(ra), float(dec)
+            if ra < 0 or ra > 360 or dec < -90 or dec > 90:
+                print '\tERROR: Malformed coordinated'
+                print '\tERROR: No OB produced'
+                sys.exit()
             hours = int(ra/15)
             minu = int((ra/15.-hours)*60)
             seco = float((((ra/15.-hours)*60)-minu)*60)
@@ -40,9 +64,16 @@ class GRONDob:
                 retdec = '-%s%s%s' %(addzero(-1*degree,1), addzero(-1*minutes,1), addzero(-1*seconds,2))
             else:
                 retdec = '%s%s%s' %(addzero(degree,1), addzero(minutes,1), addzero(seconds,2))
-        except ValueError:
-            retra = ''.join(ra.split(':'))
-            retdec = ''.join(dec.split(':')).strip('+')
+          except ValueError:
+            if len(ra.split(':')) == 3 and len(dec.split(':')) == 3:
+              retra = ''.join(ra.split(':'))
+              retdec = ''.join(dec.split(':')).strip('+')
+            else:  
+              print '\tERROR: Malformed coordinated'
+              print '\tERROR: No OB produced'
+              sys.exit()
+        else:
+            retdec, retra = dec, ra
         if float(retdec[:2]) > 40:
             print '\tWARNING: Coordinates > 40 deg'
         return retra, retdec
@@ -54,7 +85,7 @@ class GRONDob:
         else:
           if self.target != 'GRB':
             # Resolve through Sesame
-            print '\tResolving Target through SIMBAD'
+            print '\tResolving Target through Sesame'
             response = urllib.urlopen(SESAMEURL+'%s' %self.target)
             htmll = response.readlines()
             response.close()
@@ -173,7 +204,7 @@ class GRONDob:
                 f.write('%s\t"%s"\n' %(obs[0], i))
                 i+=1
             elif obs[0] == 'TEL.TARG.TARGETID':
-                f.write('%s\t"%s"\n' %(obs[0], self.target))
+                f.write('%s\t"%s"\n' %(obs[0], self.targetid))
             else: f.write('%s%s\n' %(obs[0], obs[1]))
           f.write('\n\n')            
         f.close()
