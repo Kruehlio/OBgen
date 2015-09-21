@@ -13,7 +13,14 @@ Options:
 -ob        OBs (required, e.g., 30 30 for two 30 min OBs)
 -ra        Right ascension (if target not known)
 -dec       Declination (if target not known)
--cp        Copy to wgrond directory to
+-cp        Copy to wgrond:/data/INSROOT/GROND/SYSTEM/COMMON/TEMPLATES/OBD/
+
+Output:
+=========================================================================
+Creates one OB with several templates in a sub-directory of the current UTC day. 
+The filename convention is "RA_DEC_TARGET_1stTemplate_TotalDuration.obd". There can 
+be two 30min6td templates in one OB, and there is only one OB file per target.
+=========================================================================
 """
 
 import argparse
@@ -37,6 +44,6 @@ if __name__ == "__main__":
   parser.add_argument('-cp','--copy',dest="copy",type=str,default=None)
   args = parser.parse_args()
   if args.ob == [] or args.target == 'GRB':
-    raise SystemExit("\tNeed -ob/-target arguments\n\tUse -h/--help for details!")
+    raise SystemExit("\n\tNeed -ob/-target arguments\n\tUse -h/--help for details!\n%s"%__doc__)
   else:
     obgen(args)

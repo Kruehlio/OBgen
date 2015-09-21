@@ -1,3 +1,23 @@
-'# OBgen'
+"""
+OB generator for GROND
+=========================================================================
 
-Source code for OB generator for GROND observations
+Generates .obd files with GROND OBs and can copy them to wgrond. These files
+can then be loaded into bob and executed or imported into p2pp
+Example: python OBgen.py -t GRB071031 -ob 30m6td 30m6td
+
+Options:
+=========================================================================
+-target    Target Name (required, resolved by SIMBAD, searches in XRT GRB positions)
+-ob        OBs (required, e.g., 30 30 for two 30 min OBs)
+-ra        Right ascension (if target not known)
+-dec       Declination (if target not known)
+-cp        Copy to wgrond directory to
+
+Output:
+=========================================================================
+Creates one OB with several templates in a sub-directory of the current UTC day. 
+The filename convention is "RA_DEC_TARGET_1stTemplate_TotalDuration.obd". There can 
+be two 30min6td templates in one OB, and there is only one OB file per target.
+=========================================================================
+"""

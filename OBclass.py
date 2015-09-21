@@ -2,6 +2,7 @@ import OBparams
 import urllib
 import datetime
 import os
+import subprocess
 import re
 
 XRTURL = 'http://www.swift.ac.uk/xrt_positions/index.php?basic=none&txt=1'
@@ -233,9 +234,14 @@ class GRONDob:
         
     def uploadOB(self):
         """Scp's newly created files to USER@HOST:REMDIR"""
+        print '\tCopying to %s@%s:%s'%(OBparams.USER, OBparams.HOST,
+                                       OBparams.REMDIR)
+        subprocess.call(['scp', '-r', self.obsDate, '%s@%s:%s'%(OBparams.USER, OBparams.HOST,
+                                       OBparams.REMDIR)])
+#        os.system('scp -r %s %s@%s:%s' %(self.obsDate,OBparams.USER, OBparams.HOST,
+#                                       OBparams.REMDIR))
 
-        os.system('scp -r %s %s@%s:%s' %(self.obsDate, OBparams.USER, OBparams.HOST,
-                                       OBparams.REMDIR))
+        
 #        print ('scp -r %s %s@%s:%s' %(self.obsDate, OBparams.USER, OBparams.HOST,
 #                                       OBparams.REMDIR))
     def sendOB(self,):
