@@ -3,8 +3,9 @@
 OB generator for GROND
 =========================================================================
 
-Generates .obx files with GROND OBs and copies them to wgrond.
-Example: python OBgen.py -t GRB071031 -ob 30 30
+Generates .obd files with GROND OBs and can copy them to wgrond. These files
+can then be loaded into bob and executed or imported into p2pp
+Example: python OBgen.py -t GRB071031 -ob 30m6td 30m6td
 
 Options:
 =========================================================================
@@ -36,7 +37,6 @@ if __name__ == "__main__":
   parser.add_argument('-cp','--copy',dest="copy",type=str,default=None)
   args = parser.parse_args()
   if args.ob == [] or args.target == 'GRB':
-    print("\tPlease give the required -ob/-target argument")
-    print("\tUse -h/--help for details!")
+    raise SystemExit("\tNeed -ob/-target arguments\n\tUse -h/--help for details!")
   else:
     obgen(args)
