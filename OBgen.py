@@ -12,7 +12,8 @@ Options:
 -target    Target Name (required, resolved by SIMBAD, searches in XRT GRB positions)
 -ob        OBs (required, e.g., 30 30 for two 30 min OBs)
 -ra        Right ascension (if target not known)
--dec       Declination (if target not known)
+-dec       Declination (if target not known): !!Be careful with negativ!! 
+           sexagesimal. E.g., use -dec=-20:00:00!
 -cp        Copy to wgrond:/data/INSROOT/GROND/SYSTEM/COMMON/TEMPLATES/OBD/
 
 Output:
@@ -31,17 +32,20 @@ def obgen(args):
     gOB.setCoords(args.ra, args.dec)
     gOB.setObs(args.ob)
     gOB.setFileName()
-    gOB.writeOB()
+    gOB.writeOB(args.pi, args.pid)
     if args.copy != None:
         gOB.uploadOB()
 
 if __name__ == "__main__":
   parser = argparse.ArgumentParser(usage=__doc__)
-  parser.add_argument('-ob','--OB',dest="ob",nargs='+',type=list, default=[])
-  parser.add_argument('-target','--target',dest="target",type=str,default='GRB')
-  parser.add_argument('-ra','--RA',dest="ra",type=str,default=None)
-  parser.add_argument('-dec','--DEC',dest="dec",type=str,default=None)
-  parser.add_argument('-cp','--copy',dest="copy",type=str,default=None)
+  parser.add_argument('-ob','-OB',dest="ob",nargs='+',type=list, default=[])
+  parser.add_argument('-target',type=str,default='GRB')
+  parser.add_argument('-cp','-copy',dest="copy",type=str,default=None)
+  parser.add_argument('-ra', type = str, default=None)
+  parser.add_argument('-dec', type = str, default=None)
+  parser.add_argument('-pi', default='Greiner')
+  parser.add_argument('-pid', default='095.A-9099(A)')
+
   args = parser.parse_args()
   if args.ob == [] or args.target == 'GRB':
     raise SystemExit("\n\tNeed -ob/-target arguments\n\tUse -h/--help for details!\n%s"%__doc__)

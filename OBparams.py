@@ -1,5 +1,3 @@
-PID = '095.A-9099(A)'
-PI = 'Greiner'
 USER = 'grondmgr'
 HOST = 'wgrond.ls.eso.org'
 REMDIR = '/data/INSROOT/GROND/SYSTEM/COMMON/TEMPLATES/OBD/'
@@ -26,8 +24,8 @@ describtion = (
 ('OBS.GRP', '\t"0"'),
 ('OBS.NAME', '\t\t""'),
 ('OBS.PI-COI.ID', '"0"'),
-('OBS.PI-COI.NAME', '"%s"'%PI),
-('OBS.PROG.ID', '"%s"'%PID),
+('OBS.PI-COI.NAME', ''),
+('OBS.PROG.ID', ''),
 ('OBS.TARG.NAME', '"GRB"')
 )
 

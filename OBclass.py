@@ -51,7 +51,6 @@ class GRONDob:
     def formatCoords(self, ra, dec):
         """ Uses degree or sexagesimal input coordinates and formats them into
         ESO OB style: hhmmss.ss ddmmss.s """
-        
         def addzero(val, n):
             if float(val) < 10:
                 if n == 1: return '0%.0f' %val
@@ -59,7 +58,7 @@ class GRONDob:
             else:
                 if n == 1: return '%.0f' %val
                 if n == 2: return '%.2f' %val
-        
+
         if not re.match("\d\d\d\d\d\d\.", str(ra)):
           try:
             ra, dec = float(ra), float(dec)
@@ -71,10 +70,10 @@ class GRONDob:
             seco = float((((ra/15.-hours)*60)-minu)*60)
             degree = int(dec)
             minutes = int((dec-degree)*60)
-            seconds = float((((dec-degree)*60)-minutes)*60)    
+            seconds = abs(float((((dec-degree)*60)-minutes)*60))
             retra = '%s%s%s' %(addzero(hours,1), addzero(minu,1), addzero(seco,2))
             if dec < 0:
-                retdec = '-%s%s%s' %(addzero(-1*degree,1), addzero(-1*minutes,1), addzero(-1*seconds,2))
+                retdec = '-%s%s%s' %(addzero(-1*degree,1), addzero(minutes,1), addzero(seconds,2))
             else:
                 retdec = '%s%s%s' %(addzero(degree,1), addzero(minutes,1), addzero(seconds,2))
           except ValueError:
@@ -170,7 +169,7 @@ class GRONDob:
             if obok == 0:
                 raise SystemExit('ERROR: DONT KNOW "%s" OB' %ob)
     
-    def writeOB(self):
+    def writeOB(self, pi, pid):
         """Collects all information and writes out text files"""
         
         try:
@@ -189,6 +188,10 @@ class GRONDob:
                 f.write('%s\t\t"%s_%s"\n' %(desc[0], self.target, self.obsDate))
             elif desc[0] == 'OBS.TARG.NAME':
                 f.write('%s\t\t"%s"\n' %(desc[0], self.target))
+            elif desc[0] == 'OBS.PI-COI.NAME':
+                f.write('%s\t\t"%s"\n' %(desc[0], pi))
+            elif desc[0] == 'OBS.PROG.ID':
+                f.write('%s\t\t"%s"\n' %(desc[0], pid))
             else: f.write('%s\t\t%s\n' %desc)
         f.write('\n\n')
 
