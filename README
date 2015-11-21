@@ -23,4 +23,100 @@ be two 30min6td templates in one OB, and there is only one OB file per target.
 
 Initial parameters in OBparams.py
 =========================================================================
+
+
+=== Installation ===
+
+You'll just need to have OBgen.py, OBclass.py, OBparams.py. Ideally keep 
+them in the same directory. OBparams.py is a parameter file, and defines the basic 
+OB properties. The OB definition is stored in there. The work is done within the 
+OBclass.py, OBgen.py is just a convenience script. You can also import the GRONDob 
+class from OBclass.py into your own python programs.
+
+The scripts are super basic, and written to run on a computer with the minimum 
+amount of python third party libraries available. You only requires argparse:
+
+https://pypi.python.org/pypi/argparse
+
+which should be available on most default python installations. 
+If not, putting argparse.py in the same directory as OBgen.py also works.
+
+
+
+=== What it does ===
+
+This script is intended for an easy OB creation for GROND. The best is to look 
+at some examples:
+
+From the directory where OBgen.py, OBclass.py, OBparams.py are located run:
+
+**''python OBgen.py -t GRB071031 -ob 30m6td 30m6td''
+
+Shell-output:
+	Swift trigger number found: 295670
+	Searching for coordinates for target GRB071031
+	Resolving Target through Sesame
+	Coordinates found 6.40583333 -58.05941667
+	Coordinates set 002537.40 -580333.90
+
+OB output within a directory of the current day/00_-58_GRB071031_30m6td_81min.obd (i.e., RA, DEC, Target, first template, total expected duration), which contains the preset and two templates, each for one 30min6td. Default PI Greiner, PID: 095.A-9099(A) as for the ToO follow-up.
+
+The script knows only the standard OBs (defined in OBparams.py) e.g., 
+
+** python OBgen.py -t GRB071031 -ob 30m6td 30m2td
+Shell-output: ERROR: DONT KNOW "30m2td" OB and no OB produced.
+
+The script asks Simbad and XRT for coordinates e.g., 
+
+** python OBgen.py -t M31 -ob 8m4td
+	Searching for coordinates for target M31
+	Resolving Target through Sesame
+	Coordinates found 10.68470833 41.26875
+	WARNING: Coordinates > 40 deg
+	Coordinates set 004244.33 411607.50
+
+The user can overwrite ra and dec:
+
+** python OBgen.py -t M31 -ob 8m4td -ra 00:43:00 -dec +41:16:07.5
+	WARNING: Coordinates > 40 deg
+	Coordinates set 004300 411607.5
+
+The user can specify PI (if not Greiner) and PID (if not 095.A-9099).
+
+** python OBgen.py -t M27 -ob 8m4td -pi Kruehler -pid 060.A-9800\(B\)
+
+Be careful with negativ sexagesimal coordinates:
+
+** python OBgen.py -t Test -ob 12m6td 30m6td -ra 00:43:00 -dec -41:16:07.5
+
+will '''not''' work:
+
+** python OBgen.py -t Test -ob 12m6td 30m6td -ra 00:43:00 -dec=-41:16:07.5
+
+will work.
+
+If run within the LaSilla network, the -cp 1 flag will copy the full directory 
+to wgrond. E.g.,
+
+** python OBgen.py -t GRB150910A -ob 30 30
+** python OBgen.py -t GRB150915A -ob 20 20 20 -cp 1
+
+will create two OB files within the directory and copy the directory with 
+both to wgrond.
+
+The script accepts degrees and sexagesimal coordinates and does some basic checking.
+
+** python OBgen.py -t Test -ob 30 30 -ra -50.454 -dec 50.454
+** python OBgen.py -t Test -ob 30 30 -ra 50.454 -dec 500.454
+** python OBgen.py -t Test -ob 30 30 -ra 350.454 -dec 150.454
+
+All return no OB and:
+	ERROR: Malformed coordinates
+
+Nevertheless, please check the coordinates.
+
+
+Thomas Kruehler 23.09.2015
+
+
 """

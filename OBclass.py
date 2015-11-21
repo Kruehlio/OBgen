@@ -5,20 +5,21 @@ import os
 import subprocess
 import re
 
+
 XRTURL = 'http://www.swift.ac.uk/xrt_positions/index.php?basic=none&txt=1'
 SESAMEURL = "http://cdsweb.u-strasbg.fr/cgi-bin/nph-sesame/-oI?"
 SwiftURL = "http://swift.gsfc.nasa.gov/archive/grb_table/table.php?obs=Swift&year=All+Years&restrict=none&grb_time=1&grb_trigger=1"
 
 class GRONDob:
-    """ An class for creating, writing, copying executable OBs in text files
+    """ A class for creating, writing, copying executable OBs in text files
     Gets initial parameters from OBparams
     """
     
     def __init__(self, target):
         if target.strip() != target:
             raise SystemExit('ERROR: No blanks in targetname allowed')
-
-        self.target = target
+        # Squirrel away empty spaces in the target name
+        self.target = target.replace(' ', '')
         self.header = OBparams.header
         self.acq = OBparams.acquisition
         self.OBs = []        
@@ -52,7 +53,7 @@ class GRONDob:
         """ Uses degree or sexagesimal input coordinates and formats them into
         ESO OB style: hhmmss.ss ddmmss.s """
         def addzero(val, n):
-            if float(val) < 10:
+            if abs(float(val)) < 10:
                 if n == 1: return '0%.0f' %val
                 if n == 2: return '0%.2f' %val
             else:
@@ -68,9 +69,10 @@ class GRONDob:
             hours = int(ra/15)
             minu = int((ra/15.-hours)*60)
             seco = float((((ra/15.-hours)*60)-minu)*60)
+            
             degree = int(dec)
-            minutes = int((dec-degree)*60)
-            seconds = abs(float((((dec-degree)*60)-minutes)*60))
+            minutes = int(abs(dec-degree)*60)
+            seconds = (abs((dec-degree)*60)-minutes)*60
             retra = '%s%s%s' %(addzero(hours,1), addzero(minu,1), addzero(seco,2))
             if dec < 0:
                 retdec = '-%s%s%s' %(addzero(-1*degree,1), addzero(minutes,1), addzero(seconds,2))
@@ -241,12 +243,6 @@ class GRONDob:
                                        OBparams.REMDIR)
         subprocess.call(['scp', '-r', self.obsDate, '%s@%s:%s'%(OBparams.USER, OBparams.HOST,
                                        OBparams.REMDIR)])
-#        os.system('scp -r %s %s@%s:%s' %(self.obsDate,OBparams.USER, OBparams.HOST,
-#                                       OBparams.REMDIR))
-
-        
-#        print ('scp -r %s %s@%s:%s' %(self.obsDate, OBparams.USER, OBparams.HOST,
-#                                       OBparams.REMDIR))
     def sendOB(self,):
         pass
             
