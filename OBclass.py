@@ -105,7 +105,8 @@ class GRONDob:
             response = urllib.urlopen(SESAMEURL+'%s' %self.target)
             htmll = response.readlines()
             response.close()
-            for html in htmll:
+            if len(htmll) > 11:
+              for html in htmll:
                 entries = html.split()
                 if len(entries) == 0:
                     print '\tTarget not found in Sesame'
@@ -114,6 +115,8 @@ class GRONDob:
                     ra, dec = float(entries[1]), float(entries[2])
                     print '\tCoordinates found %s %s' %(ra, dec)
                     break
+            else:
+              print '\tTarget not found in Sesame'
           if ra == None and dec == None:
             if self.target.startswith('STD'):
                 if self.target in OBparams.stdfields.keys():
@@ -173,7 +176,9 @@ class GRONDob:
     
     def writeOB(self, pi, pid):
         """Collects all information and writes out text files"""
-        
+        if not re.match('\d\d\d.\D-\d\d\d\d', pid):
+            raise SystemExit('ERROR: PID %s has wrong format (correct is e.g., 098.A-0500(B))'
+                %(str(pid)))
         try:
             os.makedirs(self.obsDate)
         except OSError:
