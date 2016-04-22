@@ -14,7 +14,10 @@ Options:
 -ra        Right ascension (if target not known)
 -dec       Declination (if target not known): !!Be careful with negativ!! 
            sexagesimal. E.g., use -dec=-20:00:00!
--cp        Copy to wgrond:/data/INSROOT/GROND/SYSTEM/COMMON/TEMPLATES/OBD/
+-cp        1 or 0 (optional) Copy to wgrond:/data/INSROOT/GROND/SYSTEM/COMMON/TEMPLATES/OBD/
+-focoff    Optional focus offset
+-pi        Optional PI
+-pid       Optional Program ID (must be in ESO format -e.g., 095.A-9099(A) )
 
 Output:
 =========================================================================
@@ -32,7 +35,7 @@ def obgen(args):
     gOB.setCoords(args.ra, args.dec)
     gOB.setObs(args.ob)
     gOB.setFileName()
-    gOB.writeOB(args.pi, args.pid)
+    gOB.writeOB(args.pi, args.pid, focoff = args.focoff)
     if args.copy != None:
         gOB.uploadOB()
 
@@ -45,6 +48,7 @@ if __name__ == "__main__":
   parser.add_argument('-dec', type = str, default=None)
   parser.add_argument('-pi', default='Greiner')
   parser.add_argument('-pid', default='095.A-9099(A)')
+  parser.add_argument('-focoff', type = int, default=0)
 
   args = parser.parse_args()
   if args.ob == [] or args.target == 'GRB':

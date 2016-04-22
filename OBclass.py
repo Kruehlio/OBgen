@@ -174,7 +174,7 @@ class GRONDob:
             if obok == 0:
                 raise SystemExit('ERROR: DONT KNOW "%s" OB' %ob)
     
-    def writeOB(self, pi, pid):
+    def writeOB(self, pi, pid, focoff = 0):
         """Collects all information and writes out text files"""
         if not re.match('\d\d\d.\D-\d\d\d\d', pid):
             raise SystemExit('ERROR: PID %s has wrong format (correct is e.g., 098.A-0500(B))'
@@ -209,7 +209,8 @@ class GRONDob:
                 f.write('%s\t\t"%s"\n' %(acq[0], self.dec))
             elif acq[0] == 'TEL.TARG.NAME':
                 f.write('%s\t\t"%s"\n' %(acq[0], self.target))
-#            elif acq[0] == 'TEL.TARG.NAME':
+            elif acq[0] == 'TEL.TARG.FOCOFFSET':
+                f.write('%s\t"%s"\n' %(acq[0], int(focoff)))
             else: f.write('%s%s\n' %(acq[0], acq[1]))
         f.write('\n\n')
 
@@ -238,6 +239,8 @@ class GRONDob:
                 i+=1
             elif obs[0] == 'TEL.TARG.TARGETID':
                 f.write('%s\t"%s"\n' %(obs[0], self.targetid))
+            elif obs[0] == 'TEL.TARG.FOCOFFSET':
+                f.write('%s\t"%s"\n' %(obs[0], int(focoff)))
             else: f.write('%s%s\n' %(obs[0], obs[1]))
           f.write('\n\n')            
         f.close()
