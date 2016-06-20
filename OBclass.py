@@ -28,6 +28,17 @@ class GRONDob:
         self.getTrig()
 
 
+    def setPID(self):
+        PIDinc, ID = 1, 'A-9099(A)'
+        if datetime.datetime.now().month in [10, 11, 12, 1, 2, 3]:
+            PIDinc = 0
+        ESOSem = (datetime.datetime.now().year-1968) * 2 + PIDinc
+        if ESOSem < 100: pid = '0%i.%s' %(ESOSem, ID)
+        else: pid = '%i.%s' %(ESOSem, ID)
+        print '\tINFO: Setting ESO Program ID to %s' %pid
+        return pid
+        
+
     def getTrig(self):
         """ Searches the Swift catalog at SwiftURL for the GRB name and gets the
         corresponding trigger ID. Sets targetid to trigger id if found, or target

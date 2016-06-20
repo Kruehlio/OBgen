@@ -32,6 +32,8 @@ from OBclass import GRONDob
 
 def obgen(args):
     gOB = GRONDob(args.target)
+    if args.pid == None:
+        args.pid = gOB.setPID()
     gOB.setCoords(args.ra, args.dec)
     gOB.setObs(args.ob)
     gOB.setFileName()
@@ -47,7 +49,7 @@ if __name__ == "__main__":
   parser.add_argument('-ra', type = str, default=None)
   parser.add_argument('-dec', type = str, default=None)
   parser.add_argument('-pi', default='Greiner')
-  parser.add_argument('-pid', default='095.A-9099(A)')
+  parser.add_argument('-pid', default=None)
   parser.add_argument('-focoff', type = int, default=0)
 
   args = parser.parse_args()
