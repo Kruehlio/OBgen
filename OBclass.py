@@ -191,7 +191,10 @@ class GRONDob:
     
     def writeOB(self, pi, pid, focoff = 0):
         """Collects all information and writes out text files"""
-        if not re.match('\d\d\d\.\w-\d\d\d\d\(\w\)', pid):
+        try:
+            pid = re.match('\d\d\d\.\w-\d\d\d\d\(\w\)', pid).group()
+            print '\tPID is %s' %(pid)
+        except AttributeError:
             raise SystemExit('ERROR: PID %s has wrong format (correct is e.g., 098.A-0500(B))'
                 %(str(pid)))
 
