@@ -29,9 +29,13 @@ class GRONDob:
 
 
     def setPID(self):
-        PIDinc, ID = 1, 'A-9099(A)'
-        if datetime.datetime.now().month in [10, 11, 12, 1, 2, 3]:
+        ID = 'A-9099(A)'
+        if datetime.datetime.now().month in [1, 2, 3]:
             PIDinc = 0
+        elif datetime.datetime.now().month in [10, 11, 12]:
+            PIDinc = 2
+        else:
+            PIDinc = 1
         ESOSem = (datetime.datetime.now().year-1968) * 2 + PIDinc
         if ESOSem < 100: pid = '0%i.%s' %(ESOSem, ID)
         else: pid = '%i.%s' %(ESOSem, ID)
@@ -187,9 +191,10 @@ class GRONDob:
     
     def writeOB(self, pi, pid, focoff = 0):
         """Collects all information and writes out text files"""
-        if not re.match('\d\d\d.\D-\d\d\d\d', pid):
+        if not re.match('\d\d\d\.\w-\d\d\d\d\(\w\)', pid):
             raise SystemExit('ERROR: PID %s has wrong format (correct is e.g., 098.A-0500(B))'
                 %(str(pid)))
+
         try:
             os.makedirs(self.obsDate)
         except OSError:
