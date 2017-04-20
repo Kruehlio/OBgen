@@ -156,12 +156,17 @@ class GRONDob:
         self.ra, self.dec = self.formatCoords(ra, dec)
         print '\tCoordinates set %s %s' %(self.ra, self.dec)
 
-    def setFileName(self):
+    def setFileName(self, offset=None):
         """ Sets filename of obd file to write """
 
         if float(self.dec)<0: decFile = self.dec[:3]
         else: decFile = '+%s' %self.dec[:2] 
-        self.FileName = '%s_%s_%s_%s_%imin.obd' \
+        if offset in ['1m']:
+            self.FileName = '%s_%s_%s_%s_%imin_%s.obd' \
+            %(self.ra[:2], decFile, self.target, self.OBs[0], 
+              sum(self.execTime)/60., offset)
+        else:
+            self.FileName = '%s_%s_%s_%s_%imin.obd' \
             %(self.ra[:2], decFile, self.target, self.OBs[0], sum(self.execTime)/60.)
 #        print self.FileName
    
@@ -178,6 +183,7 @@ class GRONDob:
                [[24,'24', '24m6td', '24min6td'], '24m6td', 1860.],
                [[30,'30', '30m6td', '30min6td'], '30m6td', 2340.],
                [[60,'60', '60m6td', '60min6td'], '60m6td', 4560.]]
+
         for ob in obs:
             obok = 0
             ob = ''.join(ob)
@@ -189,7 +195,7 @@ class GRONDob:
             if obok == 0:
                 raise SystemExit('ERROR: DONT KNOW "%s" OB' %ob)
     
-    def writeOB(self, pi, pid, focoff = 0):
+    def writeOB(self, pi, pid, focoff = 0, offset=None):
         """Collects all information and writes out text files"""
         try:
             pid = re.match('\d\d\d\.\w-\d\d\d\d\(\w\)', pid).group()
@@ -202,6 +208,10 @@ class GRONDob:
             os.makedirs(self.obsDate)
         except OSError:
             pass
+    
+        if offset in ['1m']:
+            print('\tUsing %s template' %('GROND_img_obs_exp_%s.seq')%offset)
+        
         self.OBfile = os.path.join(self.obsDate, self.FileName)
         
         f = open(self.OBfile, 'w')
@@ -260,6 +270,10 @@ class GRONDob:
                 f.write('%s\t"%s"\n' %(obs[0], self.targetid))
             elif obs[0] == 'TEL.TARG.FOCOFFSET':
                 f.write('%s\t"%s"\n' %(obs[0], int(focoff)))
+            elif obs[0] == 'TPL.ID' and offset in ['1m']:
+                f.write('%s\t\t"%s"\n' %(obs[0], 'GROND_img_obs_exp_%s' %(offset)))
+            elif obs[0] == 'TPL.PRESEQ' and offset in ['1m']:
+                f.write('%s\t\t"%s"\n' %(obs[0], 'GROND_img_obs_exp_%s.seq' %(offset)))
             else: f.write('%s%s\n' %(obs[0], obs[1]))
           f.write('\n\n')            
         f.close()

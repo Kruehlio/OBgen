@@ -18,6 +18,7 @@ Options:
 -focoff    Optional focus offset
 -pi        Optional PI
 -pid       Optional Program ID (must be in ESO format -e.g., 095.A-9099(A) )
+-offset    Optional offset of dithering pattern (default uses 10", option 1m for 1')
 
 Output:
 =========================================================================
@@ -36,8 +37,8 @@ def obgen(args):
         args.pid = gOB.setPID()
     gOB.setCoords(args.ra, args.dec)
     gOB.setObs(args.ob)
-    gOB.setFileName()
-    gOB.writeOB(args.pi, args.pid, focoff = args.focoff)
+    gOB.setFileName(args.offset)
+    gOB.writeOB(args.pi, args.pid, focoff = args.focoff, offset=args.offset)
     if args.copy != None:
         gOB.uploadOB()
 
@@ -51,6 +52,8 @@ if __name__ == "__main__":
   parser.add_argument('-pi', default='Greiner')
   parser.add_argument('-pid', default=None)
   parser.add_argument('-focoff', type = int, default=0)
+  parser.add_argument('-offset', default=None)
+
 
   args = parser.parse_args()
   if args.ob == [] or args.target == 'GRB':
