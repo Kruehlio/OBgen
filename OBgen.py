@@ -17,7 +17,7 @@ Options:
 -cp        1 or 0 (optional) Copy to wgrond:/data/INSROOT/GROND/SYSTEM/COMMON/TEMPLATES/OBD/
 -focoff    Optional focus offset
 -pi        Optional PI
--pid       Optional Program ID (must be in ESO format -e.g., 095.A-9099(A) )
+-pid       Optional Program ID (must be in ESO format -e.g., 099.A-9025(A) )
 -offset    Optional offset of dithering pattern (default uses 10", option 1m for 1')
 
 Output:
@@ -49,8 +49,8 @@ if __name__ == "__main__":
   parser.add_argument('-cp','-copy',dest="copy",type=str,default=None)
   parser.add_argument('-ra', type = str, default=None)
   parser.add_argument('-dec', type = str, default=None)
-  parser.add_argument('-pi', default='Greiner')
-  parser.add_argument('-pid', default=None)
+  parser.add_argument('-pi', default='DJDrumpf')
+  parser.add_argument('-pid', default='099.A-9025(A)')
   parser.add_argument('-focoff', type = int, default=0)
   parser.add_argument('-offset', default=None)
 

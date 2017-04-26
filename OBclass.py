@@ -114,7 +114,7 @@ class GRONDob:
             pass
         else:
           print '\tSearching for coordinates for target %s' %self.target
-          if self.target != 'GRB':
+          if not self.target.startswith('GRB'):
             # Resolve through Sesame
             print '\tResolving Target through Sesame'
             response = urllib.urlopen(SESAMEURL+'%s' %self.target)
@@ -127,9 +127,14 @@ class GRONDob:
                     print '\tTarget not found in Sesame'
                     break
                 if entries[0] == '%J':
-                    ra, dec = float(entries[1]), float(entries[2])
-                    print '\tCoordinates found %s %s' %(ra, dec)
-                    break
+		    if entries[1] != 'No':
+			try:	
+                    	    ra, dec = float(entries[1]), float(entries[2])
+                            print '\tCoordinates found %s %s' %(ra, dec)
+                            break
+                        except ValueError:
+                            pass
+				
             else:
               print '\tTarget not found in Sesame'
           if ra == None and dec == None:
